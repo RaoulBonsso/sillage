@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { Download, ExternalLink, Landmark, Play } from "lucide-react";
 import { Apparition } from "@/components/apparition";
 import { LIBELLES } from "@/domaine/pipeline";
 import { exigerSession } from "@/lib/serveur";
+import { demarrerCandidature } from "../actions";
 
 export const metadata = { title: "Cibles" };
 
@@ -23,6 +24,14 @@ export default async function Cibles({ searchParams }: { searchParams: Promise<{
       <Apparition>
         <h1 className="titre-display text-4xl sm:text-5xl">Cibles</h1>
         <p className="mt-2 text-discret">{ents.length} entreprises repérées, chacune avec un signal sourcé. Triées par pertinence.</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link href="/cibles/registres" className="inline-flex items-center gap-2 rounded-full bg-ecume px-4 py-2 text-sm font-medium text-[#00110d] hover:brightness-110">
+            <Landmark className="size-4" aria-hidden /> Chercher dans les registres officiels
+          </Link>
+          <a href="/export/candidatures" className="inline-flex items-center gap-2 rounded-full border border-ligne-forte px-4 py-2 text-sm hover:border-ecume hover:text-ecume">
+            <Download className="size-4" aria-hidden /> Exporter (CSV)
+          </a>
+        </div>
       </Apparition>
       <form className="mt-6 flex flex-wrap gap-2" role="search">
         <label htmlFor="q" className="sr-only">Rechercher</label>
@@ -58,7 +67,9 @@ export default async function Cibles({ searchParams }: { searchParams: Promise<{
                   {et ? (
                     <Link href={`/pipeline/${e.id}`} className="puce !border-ecume/40 !text-ecume hover:bg-ecume-doux">{LIBELLES[et]} →</Link>
                   ) : (
-                    <span className="puce">Pas encore de dossier</span>
+                    <form action={demarrerCandidature.bind(null, e.id)}>
+                      <button className="puce hover:!border-ecume hover:!text-ecume"><Play className="size-3" aria-hidden /> Démarrer une candidature</button>
+                    </form>
                   )}
                   <a href={e.signal.source} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-discret hover:text-ecume">
                     source <ExternalLink className="size-3" aria-hidden />

@@ -139,7 +139,7 @@ export default function Accueil() {
                 <p className="puce">Model Context Protocol</p>
                 <h2 className="titre-display mt-4 text-4xl">Vos agents, nos règles.</h2>
                 <p className="mt-3 leading-relaxed text-discret">
-                  Dix outils couvrent tout le cycle : lister et ajouter des cibles, préparer un dossier, faire avancer une candidature, obtenir les
+                  Douze outils couvrent tout le cycle : chercher dans les registres officiels, lister et ajouter des cibles, préparer un dossier, faire avancer une candidature, obtenir les
                   relances dues, déposer un post, écrire le rapport du jour. Une clé par espace, révocable.
                 </p>
               </div>

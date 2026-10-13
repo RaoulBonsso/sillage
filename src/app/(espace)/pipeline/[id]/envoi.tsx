@@ -44,7 +44,7 @@ export function Envoi({ id, a, objet, texte, relance, avecCv }: { id: string; a:
         <button disabled={enCours} className="inline-flex items-center gap-2 rounded-full bg-ecume px-5 py-2.5 font-medium text-[#00110d] transition hover:brightness-110 disabled:opacity-60">
           <Send className="size-4" aria-hidden /> {enCours ? "Envoi…" : relance ? "Envoyer la relance" : "Envoyer la candidature"}
         </button>
-        <span className="text-xs text-discret">{relance ? "Sans pièce jointe." : avecCv ? "CV PDF joint automatiquement." : "Aucun CV attaché à ce dossier."}</span>
+        <span className="text-xs text-discret">{relance ? "Sans pièce jointe." : avecCv ? "CV PDF joint automatiquement (adapté s’il existe, sinon le CV principal)." : "Aucun CV attaché à ce dossier."}</span>
         {etat && (
           <p role="status" className={`text-sm ${etat.ok ? "text-ecume" : "text-balise"}`}>
             {etat.message}

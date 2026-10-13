@@ -2,6 +2,7 @@ import { verifier } from "@/lib/jeton";
 import { depot, secret } from "@/lib/serveur";
 import { contributions } from "@/lib/github";
 import { traiter } from "@/mcp/protocole";
+import { officiel } from "@/lib/officiel";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
   } catch {
     return Response.json({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "JSON invalide" } }, { status: 400 });
   }
-  const ctx = { depot: depot(c.esp), maintenant: () => new Date().toISOString(), commits: contributions };
+  const ctx = { depot: depot(c.esp), maintenant: () => new Date().toISOString(), commits: contributions, officiel };
   const lot = Array.isArray(corps) ? corps : [corps];
   const reponses = (await Promise.all(lot.map((r) => traiter(r, ctx)))).filter((r) => r !== null);
   if (reponses.length === 0) return new Response(null, { status: 202 });
