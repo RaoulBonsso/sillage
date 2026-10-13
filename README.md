@@ -26,10 +26,10 @@ envoient le même CV partout.
 |---|---|
 | **Aujourd'hui** | Trois engagements quotidiens (candidatures envoyées, 3 posts, 1 contribution publique), la série de jours tenus, le « sillage » des 30 derniers jours, ce qui attend une action. |
 | **Candidatures** | Un pipeline à transitions contrôlées (`préparée → envoyée → relancée → réponse → entretien → offre → signée`). Envoi en un clic depuis Gmail, CV joint, relances planifiées à **J+5 puis J+7 ouvrés** (fériés français calculés, Pâques compris). |
-| **Cibles** | Les entreprises repérées par les agents, chacune avec un **signal de digitalisation sourcé** et des décideurs nommés avec leur source. |
+| **Cibles** | Les entreprises repérées, chacune avec un **signal sourcé** et des décideurs nommés. Recherche directe dans les **registres officiels** (Sirene/INSEE, RNE/INPI, BODACC) par secteur, département et taille, ajout en un clic, export CSV. |
 | **LinkedIn** | Matin : une actu tech/IA. Midi : le projet en cours. Soir : la valeur d'une solution. Éditeur avec aperçu fidèle (pli à 210 caractères), copie, ouverture directe dans LinkedIn, suivi de publication. |
 | **Journal** | Le rapport quotidien des agents : qui, pourquoi, quoi décider. |
-| **Intégrations** | Un serveur **MCP** (10 outils) : Claude Code, Claude Desktop, n8n ou n'importe quel agent pilote Sillage avec les mêmes règles que l'interface. |
+| **Intégrations** | Un serveur **MCP** (12 outils) : Claude Code, Claude Desktop, n8n ou n'importe quel agent pilote Sillage avec les mêmes règles que l'interface. |
 
 ## Principes
 
@@ -87,7 +87,7 @@ claude mcp add --transport http sillage https://<votre-instance>/api/mcp \
 ```
 
 La clé se génère dans **Intégrations**. Outils : `sillage_tableau`, `sillage_lister_cibles`,
-`sillage_ajouter_cible`, `sillage_preparer_candidature`, `sillage_avancer_candidature`, `sillage_noter`,
+`sillage_rechercher_entreprises`, `sillage_fiche_officielle`, `sillage_ajouter_cible`, `sillage_preparer_candidature`, `sillage_avancer_candidature`, `sillage_noter`,
 `sillage_relances_dues`, `sillage_ajouter_post`, `sillage_marquer_publie`, `sillage_ecrire_rapport`.
 
 ## Qualité
