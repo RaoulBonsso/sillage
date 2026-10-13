@@ -46,7 +46,8 @@ export async function envoyerCandidature(id: string, form: FormData): Promise<{ 
   const objet = String(form.get("objet") ?? "").trim();
   const texte = String(form.get("texte") ?? "").trim();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a) || !objet || !texte) return { ok: false, message: "Destinataire, objet et message sont requis." };
-  const cv = !relance && c.dossier.cv ? await s.depot.fichiers.lire(c.dossier.cv) : null;
+  // Sans CV adapté, on joint le CV principal de l'espace (fichier « cv-principal.pdf »).
+  const cv = relance ? null : await s.depot.fichiers.lire(c.dossier.cv || "cv-principal.pdf");
   try {
     await envoyer({ a, objet, texte, pieces: cv ? [{ nom: cv.nom, type: cv.type, donnees: Buffer.from(cv.donnees, "base64") }] : [] });
   } catch (e) {
@@ -82,4 +83,46 @@ export async function creerCleMcp(): Promise<string> {
 export async function deconnexion() {
   (await cookies()).delete(COOKIE);
   redirect("/");
+}
+
+/** Ajoute une entreprise trouvée dans les registres officiels ; les dirigeants deviennent des contacts sourcés. */
+export async function ajouterDepuisRegistre(siren: string, form: FormData) {
+  const s = await exigerSession();
+  const { fiche } = await import("@/lib/officiel");
+  const { liensOfficiels, SECTEURS } = await import("@/domaine/officiel");
+  const f = await fiche(siren);
+  if (!f) throw new Error("Entreprise introuvable dans le registre");
+  const source = liensOfficiels(siren)[0].url;
+  const secteur = SECTEURS.find((x) => x.naf === f.naf)?.libelle ?? `NAF ${f.naf}`;
+  const raison = String(form.get("raison") ?? "").trim();
+  const existante = await s.depot.entreprises.lire(siren);
+  await s.depot.entreprises.ecrire({
+    id: siren,
+    nom: f.nom,
+    ville: f.ville,
+    secteur,
+    naf: f.naf,
+    effectif: f.effectif,
+    site: existante?.site ?? "",
+    signal: { texte: raison || `Repérée dans l'annuaire officiel : ${secteur.toLowerCase()} à ${f.ville}, ${f.effectif.toLowerCase()}.`, source },
+    angle: existante?.angle ?? "",
+    score: existante?.score ?? Math.min(100, Math.max(0, Number(form.get("score") ?? 50) || 50)),
+    contacts: existante?.contacts.length ? existante.contacts : f.dirigeants.filter((d) => d.personne === "physique").map((d) => ({ nom: d.nom, role: d.qualite, email: "", confiance: "" as const, linkedin: "", source })),
+    ajouteeLe: existante?.ajouteeLe ?? new Date().toISOString().slice(0, 10),
+  });
+  revalidatePath("/cibles", "layout");
+}
+
+/** Démarre une candidature à la main (sans agent) : un brouillon d'e-mail à compléter avant envoi. */
+export async function demarrerCandidature(entrepriseId: string) {
+  const s = await exigerSession();
+  const e = await s.depot.entreprises.lire(entrepriseId);
+  if (!e) throw new Error("Entreprise introuvable");
+  if (!(await s.depot.candidatures.lire(entrepriseId))) {
+    const { nouvelleCandidature } = await import("@/domaine/pipeline");
+    const k = e.contacts[0];
+    const corps = `Bonjour${k ? ` ${k.nom}` : ""},\n\n[Pourquoi ${e.nom}, en une phrase concrète.]\n\n[Ce que vous pouvez leur apporter dès les premières semaines.]\n\nPouvons-nous en parler 15 minutes, à votre convenance ?\n\nBien cordialement,\n${process.env.SILLAGE_EXPEDITEUR ?? ""}`;
+    await s.depot.candidatures.ecrire(nouvelleCandidature(entrepriseId, { cv: "", lettre: "", email: { objet: "Candidature spontanée — alternance", corps }, miniProjet: "" }, new Date().toISOString(), "humain"));
+  }
+  redirect(`/pipeline/${entrepriseId}`);
 }

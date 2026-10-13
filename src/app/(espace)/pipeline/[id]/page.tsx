@@ -7,6 +7,8 @@ import { aujourdhui, exigerSession } from "@/lib/serveur";
 import { changerEtape, noter } from "../../actions";
 import { Envoi } from "./envoi";
 import { Onglets } from "./onglets";
+import { FicheOfficielle } from "./fiche-officielle";
+import { Suspense } from "react";
 
 const RELANCE = (nom: string, objet: string) =>
   `Bonjour${nom ? ` ${nom}` : ""},\n\nJe me permets de revenir vers vous au sujet de ma candidature en alternance (« ${objet} »).\n\nJe pense toujours pouvoir vous être utile rapidement, et vous présenter en 15 minutes la petite démonstration évoquée serait un plaisir.\n\nBien cordialement,\n${process.env.SILLAGE_EXPEDITEUR ?? ""}`;
@@ -50,8 +52,8 @@ export default async function Fiche({ params }: { params: Promise<{ id: string }
         </p>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <div className="carte p-6">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="carte min-w-0 p-6">
           <Onglets
             onglets={[
               ...(peutEnvoyer
@@ -66,7 +68,7 @@ export default async function Fiche({ params }: { params: Promise<{ id: string }
                           objet={relance ? `Re: ${c.dossier.email.objet}` : c.dossier.email.objet}
                           texte={relance ? RELANCE(contact?.nom ?? "", c.dossier.email.objet) : c.dossier.email.corps}
                           relance={relance}
-                          avecCv={!!c.dossier.cv}
+                          avecCv={!!c.dossier.cv || !!(await s.depot.fichiers.lire("cv-principal.pdf"))}
                         />
                       ),
                     },
@@ -102,7 +104,7 @@ export default async function Fiche({ params }: { params: Promise<{ id: string }
           />
         </div>
 
-        <aside className="space-y-4">
+        <aside className="min-w-0 space-y-4">
           <div className="carte p-5">
             <h2 className="text-sm font-medium">Pourquoi eux</h2>
             {e && (
@@ -150,6 +152,10 @@ export default async function Fiche({ params }: { params: Promise<{ id: string }
               ))}
             </ul>
           </div>
+
+          <Suspense fallback={<div className="carte h-40 animate-pulse" aria-hidden />}>
+            <FicheOfficielle siren={c.entrepriseId} />
+          </Suspense>
 
           {c.dossier.cv && (
             <a href={`/fichier/${encodeURIComponent(c.dossier.cv)}`} target="_blank" className="carte flex items-center gap-3 p-4 text-sm hover:border-ecume">
