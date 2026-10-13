@@ -9,12 +9,24 @@ import { avancer, nouvelleCandidature, relancesDues } from "@/domaine/pipeline";
 import { bilanDuJour, OBJECTIFS_DEFAUT, serie } from "@/domaine/serie";
 import { ETAPES } from "@/domaine/types";
 import { activiteParJour } from "@/store/lecture";
+import { EFFECTIFS, liensOfficiels, type FicheOfficielle, type Filtres } from "@/domaine/officiel";
 import type { Depot } from "@/store/port";
 
 export interface Contexte {
   depot: Depot;
   maintenant: () => string;
   commits?: () => Promise<Record<string, number>>;
+  /** Accès aux registres publics (injecté : réseau en production, faux en test). */
+  officiel?: {
+    rechercher(f: Filtres): Promise<{ total: number; fiches: FicheOfficielle[] }>;
+    fiche(siren: string): Promise<FicheOfficielle | null>;
+    annonces(siren: string, n?: number): Promise<{ date: string; famille: string; type: string; url: string }[]>;
+  };
+}
+
+function exigerOfficiel(ctx: Contexte) {
+  if (!ctx.officiel) throw new Error("Sources officielles indisponibles sur ce serveur.");
+  return ctx.officiel;
 }
 
 interface Outil<S extends z.ZodType> {
@@ -60,6 +72,37 @@ export const OUTILS = {
         .filter((e) => !a.secteur || norm(e.secteur).includes(norm(a.secteur)))
         .filter((e) => a.scoreMin === undefined || e.score >= a.scoreMin)
         .map(({ id, nom, ville, secteur, score }) => ({ id, nom, ville, secteur, score }));
+    },
+  }),
+
+  sillage_rechercher_entreprises: outil({
+    description:
+      "Cherche des entreprises ACTIVES dans les registres officiels (Sirene/INSEE + RNE/INPI, API publique). Filtres : mots-clés, département, code postal, code NAF, taille. Renvoie SIREN, effectif, dirigeants nommés et si l'entreprise est déjà ciblée.",
+    entree: z.object({
+      q: z.string().optional(),
+      departement: z.string().regex(/^(\d{2,3}|2A|2B)$/).optional(),
+      codePostal: z.string().regex(/^\d{5}$/).optional(),
+      naf: z.string().regex(/^\d{2}\.\d{2}[A-Z]$/).optional().describe("Code NAF rév. 2, ex. 69.20Z (expertise comptable)"),
+      taille: z.enum(EFFECTIFS.map((e) => e.cle) as [string, ...string[]]).optional().describe("tpe (1–9), pe (10–49), me (50–249), gr (250+)"),
+      page: z.number().int().min(1).max(50).default(1),
+    }),
+    async executer(a, ctx) {
+      const o = exigerOfficiel(ctx);
+      const effectifs = EFFECTIFS.find((e) => e.cle === a.taille)?.codes;
+      const [res, cibles] = await Promise.all([o.rechercher({ ...a, effectifs }), ctx.depot.entreprises.lister()]);
+      const deja = new Set(cibles.map((c) => c.id));
+      return { total: res.total, entreprises: res.fiches.map((f) => ({ ...f, dejaCiblee: deja.has(f.siren) })) };
+    },
+  }),
+
+  sillage_fiche_officielle: outil({
+    description: "Fiche officielle d'une entreprise par SIREN : identité, effectif, dirigeants, derniers comptes publiés, dernières annonces BODACC et liens vers les registres.",
+    entree: z.object({ siren: z.string().regex(/^\d{9}$/) }),
+    async executer(a, ctx) {
+      const o = exigerOfficiel(ctx);
+      const [f, bodacc] = await Promise.all([o.fiche(a.siren), o.annonces(a.siren)]);
+      if (!f) throw new Error(`Aucune entreprise active trouvée pour le SIREN ${a.siren}`);
+      return { ...f, bodacc, sources: liensOfficiels(a.siren) };
     },
   }),
 

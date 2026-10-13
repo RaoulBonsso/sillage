@@ -47,3 +47,32 @@ describe("protocole MCP", () => {
     expect(r.error.code).toBe(-32601);
   });
 });
+
+describe("outils des sources officielles", () => {
+  const fiche = { siren: "807728126", nom: "LONESTONE", naf: "62.01Z", effectif: "20 à 49 salariés", trancheEffectif: "12", categorie: "PME", creation: "2014-10-30", active: true, adresse: "", ville: "Nantes", codePostal: "44200", dirigeants: [], finances: null };
+  const officiel = {
+    rechercher: async () => ({ total: 1, fiches: [fiche] }),
+    fiche: async (s: string) => (s === fiche.siren ? fiche : null),
+    annonces: async () => [{ date: "2024-12-26", famille: "Modifications diverses", type: "", url: "https://www.bodacc.fr/x" }],
+  };
+
+  it("signale les entreprises déjà ciblées", async () => {
+    const c = { ...ctx(), officiel };
+    await traiter(appel("sillage_ajouter_cible", { ...cible, id: "807728126" }), c);
+    const r = texte(await traiter(appel("sillage_rechercher_entreprises", { departement: "44", taille: "pe" }), c));
+    expect(r.entreprises[0].dejaCiblee).toBe(true);
+  });
+
+  it("assemble fiche, annonces BODACC et sources", async () => {
+    const r = texte(await traiter(appel("sillage_fiche_officielle", { siren: "807728126" }), { ...ctx(), officiel }));
+    expect(r.bodacc).toHaveLength(1);
+    expect(r.sources[0].url).toContain("annuaire-entreprises.data.gouv.fr");
+  });
+
+  it("refuse un SIREN mal formé et dit clairement quand les registres sont indisponibles", async () => {
+    const mauvais = (await traiter(appel("sillage_fiche_officielle", { siren: "12" }), { ...ctx(), officiel })) as { result: { isError: boolean } };
+    expect(mauvais.result.isError).toBe(true);
+    const sans = (await traiter(appel("sillage_fiche_officielle", { siren: "807728126" }), ctx())) as { result: { isError: boolean; content: { text: string }[] } };
+    expect(sans.result.content[0].text).toMatch(/indisponibles/);
+  });
+});
