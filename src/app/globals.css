@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+/*
+ * Sillage — encre de nuit, écume et balise.
+ * L'écume (turquoise) marque ce qui avance ; la balise (corail) ce qui attend
+ * une action humaine (relance due, post à publier).
+ */
+:root {
+  --fond: #05080f;
+  --surface: #0b1019;
+  --surface-2: #111827;
+  --ligne: rgb(255 255 255 / 0.07);
+  --ligne-forte: rgb(255 255 255 / 0.14);
+  --texte: #e8edf5;
+  --discret: #8a94a8;
+  --ecume: #5eead4;
+  --ecume-doux: rgb(94 234 212 / 0.12);
+  --balise: #ff7a59;
+  --balise-doux: rgb(255 122 89 / 0.13);
+  --lune: #a5b4fc;
+  --or: #fbbf24;
+}
+
+@theme inline {
+  --color-fond: var(--fond);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ligne: var(--ligne);
+  --color-ligne-forte: var(--ligne-forte);
+  --color-texte: var(--texte);
+  --color-discret: var(--discret);
+  --color-ecume: var(--ecume);
+  --color-ecume-doux: var(--ecume-doux);
+  --color-balise: var(--balise);
+  --color-balise-doux: var(--balise-doux);
+  --color-lune: var(--lune);
+  --color-or: var(--or);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-instrument);
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--ecume);
+  color: #00110d;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ecume);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.titre-display {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+}
+
+.halo {
+  background:
+    radial-gradient(55% 45% at 15% 0%, rgb(94 234 212 / 0.13), transparent 70%),
+    radial-gradient(45% 40% at 95% 5%, rgb(165 180 252 / 0.12), transparent 70%);
+}
+
+.grille-points {
+  background-image: radial-gradient(rgb(255 255 255 / 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.carte {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.025), transparent 60%), var(--surface);
+  border: 1px solid var(--ligne);
+  border-radius: 1.25rem;
+}
+
+.puce {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  border: 1px solid var(--ligne-forte);
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--discret);
+}
+
+/* Houle : ondulation lente sous le héros. */
+@keyframes houle {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.houle {
+  animation: houle 22s linear infinite;
+}
+
+@keyframes pulse-balise {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(255 122 89 / 0.45); }
+  50% { box-shadow: 0 0 0 6px rgb(255 122 89 / 0); }
+}
+.pulse-balise {
+  animation: pulse-balise 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
