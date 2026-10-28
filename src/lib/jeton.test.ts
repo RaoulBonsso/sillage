@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { autorise, emettre, espaceDe, verifier } from "./jeton";
+import { autorise, cleActive, emettre, espaceDe, verifier } from "./jeton";
 
 const S = "secret-de-test";
 const charge = { u: "session" as const, email: "a@b.fr", esp: espaceDe("a@b.fr"), exp: 2_000_000_000 };
@@ -24,6 +24,21 @@ describe("jetons", () => {
     const faux = Buffer.from(JSON.stringify({ ...charge, email: "pirate@x.fr" })).toString("base64url");
     const [, sig] = emettre(charge, S).split(".");
     expect(verifier(`${faux}.${sig}`, "session", S)).toBeNull();
+  });
+});
+
+describe("cleActive", () => {
+  const cle = { u: "mcp" as const, email: "a@b.fr", esp: "e", exp: 0 };
+  it("accepte une clé dont la version est celle de l'espace", () => {
+    expect(cleActive({ ...cle, v: 2 }, 2)).toBe(true);
+  });
+  it("refuse une clé périmée ou venue d'une version future", () => {
+    expect(cleActive({ ...cle, v: 1 }, 2)).toBe(false);
+    expect(cleActive({ ...cle, v: 3 }, 2)).toBe(false);
+  });
+  it("traite une clé sans version comme la version 0 (clés déjà émises)", () => {
+    expect(cleActive(cle, 0)).toBe(true);
+    expect(cleActive(cle, 1)).toBe(false);
   });
 });
 

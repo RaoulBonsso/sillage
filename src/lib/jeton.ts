@@ -45,6 +45,11 @@ export function verifier(jeton: string, usage: Usage, secret: string, maintenant
   }
 }
 
+/** Une clé MCP n'est valable que si sa version est celle de l'espace ; sans `v`, c'est la version 0. */
+export function cleActive(c: Charge, versionEspace: number): boolean {
+  return (c.v ?? 0) === versionEspace;
+}
+
 /** Liste blanche d'inscription : "*" = ouvert à tous, sinon e-mails séparés par des virgules. */
 export function autorise(email: string, liste: string | undefined): boolean {
   if (!liste) return false;
