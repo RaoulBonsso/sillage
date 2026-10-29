@@ -16,8 +16,8 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
 
 ## v0.2 — fiabilité
 - [ ] Révocation fine des clés MCP (version de clé par espace)
-  - [ ] Règle pure `cleActive` : une clé n'est valable que si sa version `v` égale celle de l'espace
-  - [ ] Version stockée par espace (collection `reglages`), clés émises avec `v`, action « révoquer »
+  - [x] Règle pure `cleActive` : une clé n'est valable que si sa version `v` égale celle de l'espace
+  - [x] Version stockée par espace (collection `reglages`), clés émises avec `v`, action « révoquer »
   - [ ] La route `/api/mcp` refuse les clés périmées ; bouton « Révoquer les clés » dans Intégrations
 - [ ] Limitation de débit sur `/api/auth/lien` et `/api/mcp`
 - [ ] Tests d'intégration des routes (MCP, fichiers, session) avec le dépôt mémoire

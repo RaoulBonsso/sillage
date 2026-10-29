@@ -45,5 +45,6 @@ export function depotFirestore(espace: string): Depot {
     posts: c("posts"),
     rapports: c("rapports"),
     fichiers: c("fichiers"),
+    reglages: c("reglages"),
   };
 }

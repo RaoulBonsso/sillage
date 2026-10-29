@@ -22,5 +22,6 @@ export function depotMemoire(): Depot {
     posts: new CollectionMemoire(),
     rapports: new CollectionMemoire(),
     fichiers: new CollectionMemoire(),
+    reglages: new CollectionMemoire(),
   };
 }

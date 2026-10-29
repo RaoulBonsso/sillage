@@ -18,12 +18,19 @@ export interface Fichier {
   donnees: string; // base64 — un CV PDF tient largement sous la limite de 1 Mo d'un document
 }
 
+/** Réglages d'un espace (document unique `cles`) : version courante des clés MCP. */
+export interface Reglages {
+  id: "cles";
+  version: number;
+}
+
 export interface Depot {
   entreprises: Collection<Entreprise>;
   candidatures: Collection<Candidature>;
   posts: Collection<Post>;
   rapports: Collection<Rapport & { id: string }>;
   fichiers: Collection<Fichier>;
+  reglages: Collection<Reglages>;
 }
 
 export type NomCollection = keyof Depot;

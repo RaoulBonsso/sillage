@@ -7,6 +7,7 @@ import { avancer } from "@/domaine/pipeline";
 import { ETAPES, type Etape } from "@/domaine/types";
 import { envoyer } from "@/lib/courriel";
 import { emettre } from "@/lib/jeton";
+import { revoquerCles, versionCles } from "@/store/reglages";
 import { COOKIE, exigerSession, secret } from "@/lib/serveur";
 
 const maintenant = () => new Date().toISOString();
@@ -74,10 +75,16 @@ export async function statutPost(id: string, statut: "a_publier" | "publie" | "i
   revalidatePath("/", "layout");
 }
 
-/** Clé MCP sans expiration, liée à l'espace. Affichée une seule fois. */
+/** Clé MCP sans expiration, liée à l'espace et à sa version de clés courante. Affichée une seule fois. */
 export async function creerCleMcp(): Promise<string> {
   const s = await exigerSession();
-  return emettre({ u: "mcp", email: s.email, esp: s.esp, exp: 0 }, secret());
+  return emettre({ u: "mcp", email: s.email, esp: s.esp, exp: 0, v: await versionCles(s.depot) }, secret());
+}
+
+/** Invalide toutes les clés MCP déjà émises pour cet espace. */
+export async function revoquerClesMcp(): Promise<void> {
+  const s = await exigerSession();
+  await revoquerCles(s.depot);
 }
 
 export async function deconnexion() {
