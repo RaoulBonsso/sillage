@@ -3,6 +3,7 @@ import { depot, secret } from "@/lib/serveur";
 import { contributions } from "@/lib/github";
 import { traiter } from "@/mcp/protocole";
 import { officiel } from "@/lib/officiel";
+import { cleMcpValide } from "@/store/reglages";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,10 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   const cle = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? "";
   const c = verifier(cle, "mcp", secret());
-  if (!c) return Response.json({ jsonrpc: "2.0", id: null, error: { code: -32001, message: "Clé MCP absente ou invalide" } }, { status: 401 });
+  const nonAutorise = () => Response.json({ jsonrpc: "2.0", id: null, error: { code: -32001, message: "Clé MCP absente, invalide ou révoquée" } }, { status: 401 });
+  if (!c) return nonAutorise();
+  const d = depot(c.esp);
+  if (!(await cleMcpValide(d, c))) return nonAutorise();
 
   let corps: unknown;
   try {
@@ -18,7 +22,7 @@ export async function POST(req: Request) {
   } catch {
     return Response.json({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "JSON invalide" } }, { status: 400 });
   }
-  const ctx = { depot: depot(c.esp), maintenant: () => new Date().toISOString(), commits: contributions, officiel };
+  const ctx = { depot: d, maintenant: () => new Date().toISOString(), commits: contributions, officiel };
   const lot = Array.isArray(corps) ? corps : [corps];
   const reponses = (await Promise.all(lot.map((r) => traiter(r, ctx)))).filter((r) => r !== null);
   if (reponses.length === 0) return new Response(null, { status: 202 });
