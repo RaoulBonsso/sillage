@@ -43,4 +43,14 @@ export async function origine(): Promise<string> {
   return `${proto}://${hote}`;
 }
 
-export const aujourdhui = () => new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" });
+/** Adresse du client, d'après le premier saut de `x-forwarded-for` (posé par la plateforme). */
+export function ipClient(req: Request): string {
+  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "inconnue";
+}
+
+/** Réponse 429 standard avec `Retry-After`. */
+export function tropDeRequetes(reessayerDansS: number) {
+  return new Response("Trop de requêtes, réessayez plus tard.", { status: 429, headers: { "Retry-After": String(reessayerDansS) } });
+}
+
+export const aujourdhui =() => new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" });

@@ -1,5 +1,6 @@
 import { verifier } from "@/lib/jeton";
-import { depot, secret } from "@/lib/serveur";
+import { creerLimiteur } from "@/domaine/limite";
+import { depot, ipClient, secret } from "@/lib/serveur";
 import { contributions } from "@/lib/github";
 import { traiter } from "@/mcp/protocole";
 import { officiel } from "@/lib/officiel";
@@ -7,8 +8,15 @@ import { cleMcpValide } from "@/store/reglages";
 
 export const dynamic = "force-dynamic";
 
+// Meilleur effort : compteur en mémoire de l'instance, appliqué avant toute vérification de clé.
+const parIp = creerLimiteur({ max: 120, fenetreMs: 60_000 });
+
 /** Point d'entrée MCP (Streamable HTTP, sans état). Authentification : `Authorization: Bearer <clé MCP>`. */
 export async function POST(req: Request) {
+  const v = parIp.essayer(ipClient(req));
+  if (!v.autorise) {
+    return Response.json({ jsonrpc: "2.0", id: null, error: { code: -32029, message: "Trop de requêtes" } }, { status: 429, headers: { "Retry-After": String(v.reessayerDansS) } });
+  }
   const cle = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? "";
   const c = verifier(cle, "mcp", secret());
   const nonAutorise = () => Response.json({ jsonrpc: "2.0", id: null, error: { code: -32001, message: "Clé MCP absente, invalide ou révoquée" } }, { status: 401 });

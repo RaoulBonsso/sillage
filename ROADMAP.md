@@ -19,7 +19,7 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
   - [x] Règle pure `cleActive` : une clé n'est valable que si sa version `v` égale celle de l'espace
   - [x] Version stockée par espace (collection `reglages`), clés émises avec `v`, action « révoquer »
   - [x] La route `/api/mcp` refuse les clés périmées ; bouton « Révoquer les clés » dans Intégrations
-- [ ] Limitation de débit sur `/api/auth/lien` et `/api/mcp`
+- [x] Limitation de débit sur `/api/auth/lien` et `/api/mcp` (fenêtre fixe en mémoire, `src/domaine/limite.ts` ; meilleur effort par instance)
 - [ ] Tests d'intégration des routes (MCP, fichiers, session) avec le dépôt mémoire
 - [ ] Journal d'audit des envois (identifiant de message Gmail stocké dans l'historique)
 - [ ] Export / import complet d'un espace (JSON) — réversibilité
