@@ -13,5 +13,11 @@ export default defineConfig({
     setupFiles: ["./vitest.setup.ts"],
     exclude: [...configDefaults.exclude, "e2e/**"],
   },
-  resolve: { alias: { "@": path.resolve(__dirname, "./src") } },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      // `server-only` lève hors composant serveur ; en test, on le neutralise.
+      "server-only": path.resolve(__dirname, "./node_modules/server-only/empty.js"),
+    },
+  },
 });

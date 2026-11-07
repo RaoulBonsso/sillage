@@ -21,6 +21,9 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
   - [x] La route `/api/mcp` refuse les clés périmées ; bouton « Révoquer les clés » dans Intégrations
 - [x] Limitation de débit sur `/api/auth/lien` et `/api/mcp` (fenêtre fixe en mémoire, `src/domaine/limite.ts` ; meilleur effort par instance)
 - [ ] Tests d'intégration des routes (MCP, fichiers, session) avec le dépôt mémoire
+  - [x] Route `/api/mcp` : 401 sans clé / clé révoquée, 429, JSON invalide, appel d'outil, lot, notification
+  - [ ] Route `/api/fichiers`
+  - [ ] Routes `/api/auth/lien` et `/api/auth/verifier` (session)
 - [ ] Journal d'audit des envois (identifiant de message Gmail stocké dans l'historique)
 - [ ] Export / import complet d'un espace (JSON) — réversibilité
 
