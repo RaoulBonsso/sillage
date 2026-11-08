@@ -22,7 +22,7 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
 - [x] Limitation de débit sur `/api/auth/lien` et `/api/mcp` (fenêtre fixe en mémoire, `src/domaine/limite.ts` ; meilleur effort par instance)
 - [ ] Tests d'intégration des routes (MCP, fichiers, session) avec le dépôt mémoire
   - [x] Route `/api/mcp` : 401 sans clé / clé révoquée, 429, JSON invalide, appel d'outil, lot, notification
-  - [ ] Route `/api/fichiers`
+  - [x] Route `/api/fichiers` (corrige au passage : les clés révoquées y étaient acceptées)
   - [ ] Routes `/api/auth/lien` et `/api/auth/verifier` (session)
 - [ ] Journal d'audit des envois (identifiant de message Gmail stocké dans l'historique)
 - [ ] Export / import complet d'un espace (JSON) — réversibilité
