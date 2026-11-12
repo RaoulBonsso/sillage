@@ -24,7 +24,7 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
   - [x] Route `/api/mcp` : 401 sans clé / clé révoquée, 429, JSON invalide, appel d'outil, lot, notification
   - [x] Route `/api/fichiers` (corrige au passage : les clés révoquées y étaient acceptées)
   - [x] Routes `/api/auth/lien` et `/api/auth/verifier` (session)
-- [ ] Journal d'audit des envois (identifiant de message Gmail stocké dans l'historique)
+- [x] Journal d'audit des envois (identifiant de message Gmail stocké dans l'historique)
 - [ ] Export / import complet d'un espace (JSON) — réversibilité
 
 ## v0.3 — intelligence

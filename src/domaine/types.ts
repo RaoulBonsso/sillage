@@ -70,6 +70,8 @@ export interface Evenement {
   type: TypeEvenement;
   texte: string;
   auteur: "humain" | "agent";
+  /** Identifiant du message Gmail (Message-ID) pour les envois et relances : trace d'audit. */
+  messageId?: string;
 }
 
 export interface Dossier {

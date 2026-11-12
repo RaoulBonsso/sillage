@@ -49,12 +49,13 @@ export async function envoyerCandidature(id: string, form: FormData): Promise<{ 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a) || !objet || !texte) return { ok: false, message: "Destinataire, objet et message sont requis." };
   // Sans CV adapté, on joint le CV principal de l'espace (fichier « cv-principal.pdf »).
   const cv = relance ? null : await s.depot.fichiers.lire(c.dossier.cv || "cv-principal.pdf");
+  let messageId: string;
   try {
-    await envoyer({ a, objet, texte, pieces: cv ? [{ nom: cv.nom, type: cv.type, donnees: Buffer.from(cv.donnees, "base64") }] : [] });
+    messageId = await envoyer({ a, objet, texte, pieces: cv ? [{ nom: cv.nom, type: cv.type, donnees: Buffer.from(cv.donnees, "base64") }] : [] });
   } catch (e) {
     return { ok: false, message: (e as Error).message };
   }
-  await s.depot.candidatures.ecrire(avancer(c, relance ? "relancee" : "envoyee", maintenant(), `${relance ? "Relance" : "Candidature"} envoyée à ${a} — « ${objet} »`, "humain"));
+  await s.depot.candidatures.ecrire(avancer(c, relance ? "relancee" : "envoyee", maintenant(), `${relance ? "Relance" : "Candidature"} envoyée à ${a} — « ${objet} »`, "humain", messageId));
   revalidatePath("/", "layout");
   return { ok: true, message: relance ? "Relance envoyée." : "Candidature envoyée." };
 }

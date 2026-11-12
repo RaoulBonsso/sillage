@@ -89,6 +89,7 @@ export default async function Fiche({ params }: { params: Promise<{ id: string }
                             {new Date(h.date).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Paris" })} · {h.auteur}
                           </p>
                           <p className="mt-0.5 text-sm">{h.texte}</p>
+                          {h.messageId && <p className="mt-0.5 break-all font-mono text-[11px] text-discret">Message-ID {h.messageId}</p>}
                         </li>
                       ))}
                     </ol>

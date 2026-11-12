@@ -33,6 +33,13 @@ describe("avancer", () => {
     expect(c.prochaineRelance).toBeNull();
   });
 
+  it("consigne l'identifiant du message dans l'événement quand il est fourni, et pas sinon", () => {
+    const c = avancer(base(), "envoyee", "2026-10-13T09:00:00.000Z", "envoyée", "humain", "<abc@mail.gmail.com>");
+    expect(c.historique.at(-1)?.messageId).toBe("<abc@mail.gmail.com>");
+    const sans = avancer(base(), "envoyee", "2026-10-13T09:00:00.000Z");
+    expect(sans.historique.at(-1)).not.toHaveProperty("messageId");
+  });
+
   it("une réponse arrête les relances", () => {
     let c = avancer(base(), "envoyee", "2026-10-13T09:00:00.000Z");
     c = avancer(c, "reponse", "2026-10-14T09:00:00.000Z");

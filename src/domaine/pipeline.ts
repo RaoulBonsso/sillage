@@ -69,6 +69,7 @@ export function avancer(
   maintenant: string,
   texte = "",
   auteur: "humain" | "agent" = "humain",
+  messageId?: string,
 ): Candidature {
   if (!TRANSITIONS[c.etape].includes(vers)) {
     throw new Error(`Transition refusée : ${c.etape} → ${vers}`);
@@ -76,7 +77,7 @@ export function avancer(
   const suite: Candidature = {
     ...c,
     etape: vers,
-    historique: [...c.historique, { date: maintenant, type: EVENEMENT[vers], texte: texte || LIBELLES[vers], auteur }],
+    historique: [...c.historique, { date: maintenant, type: EVENEMENT[vers], texte: texte || LIBELLES[vers], auteur, ...(messageId ? { messageId } : {}) }],
     majLe: maintenant,
   };
   if (vers === "envoyee") {
