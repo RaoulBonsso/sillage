@@ -26,6 +26,9 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
   - [x] Routes `/api/auth/lien` et `/api/auth/verifier` (session)
 - [x] Journal d'audit des envois (identifiant de message Gmail stocké dans l'historique)
 - [ ] Export / import complet d'un espace (JSON) — réversibilité
+  - [x] Règles pures `src/domaine/sauvegarde.ts` : construire une sauvegarde versionnée, la relire et la valider (les réglages / clés MCP n'en font jamais partie)
+  - [ ] Export : route `/export/espace` (JSON téléchargeable) + lien dans Intégrations
+  - [ ] Import : action serveur avec aperçu des volumes, écriture dans le dépôt, refus des fichiers invalides
 
 ## v0.3 — intelligence
 - [ ] Détection des réponses : lecture IMAP des réponses aux candidatures → étape « réponse » automatique
