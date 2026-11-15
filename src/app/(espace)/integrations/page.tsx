@@ -28,6 +28,15 @@ export default async function Integrations() {
         <p className="mb-4 mt-1 text-sm text-discret">Une clé donne accès à votre espace et à lui seul. Rangez-la comme un mot de passe (variable d&apos;environnement SILLAGE_CLE).</p>
         <Cle />
       </Apparition>
+      <Apparition delai={0.06} className="carte p-6">
+        <h2 className="font-medium">Sauvegarde de l&apos;espace</h2>
+        <p className="mb-4 mt-1 text-sm text-discret">
+          Un fichier JSON avec vos entreprises, candidatures, posts, rapports et fichiers. Les clés MCP n&apos;y figurent jamais.
+        </p>
+        <a href="/export/espace" className="inline-flex items-center gap-2 rounded-full border border-ligne-forte px-4 py-2 text-sm hover:border-ecume hover:text-ecume">
+          Télécharger la sauvegarde (JSON)
+        </a>
+      </Apparition>
       <div className="grid gap-4 lg:grid-cols-3">
         {blocs.map((b, i) => (
           <Apparition key={b.titre} delai={0.08 + i * 0.04} className="carte min-w-0 p-5">
