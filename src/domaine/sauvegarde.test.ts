@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { construireSauvegarde, lireSauvegarde, VERSION_SAUVEGARDE } from "./sauvegarde";
+import { apercuSauvegarde, construireSauvegarde, lireSauvegarde, VERSION_SAUVEGARDE } from "./sauvegarde";
 
 const donnees = {
   entreprises: [{ id: "123456789", nom: "Acme" }],
@@ -47,5 +47,20 @@ describe("sauvegarde d'un espace", () => {
     const r = lireSauvegarde(texte);
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.erreur.length).toBeGreaterThan(0);
+  });
+});
+
+describe("apercuSauvegarde", () => {
+  it("compte les documents de chaque collection", () => {
+    const lue = lireSauvegarde(enveloppe(donnees));
+    if (!lue.ok) throw new Error("lecture attendue");
+    expect(apercuSauvegarde(lue.sauvegarde)).toEqual({ entreprises: 1, candidatures: 1, posts: 1, rapports: 1, fichiers: 1 });
+  });
+
+  it("compte zéro pour une sauvegarde vide", () => {
+    const vide = { entreprises: [], candidatures: [], posts: [], rapports: [], fichiers: [] };
+    const lue = lireSauvegarde(enveloppe(vide));
+    if (!lue.ok) throw new Error("lecture attendue");
+    expect(apercuSauvegarde(lue.sauvegarde)).toEqual({ entreprises: 0, candidatures: 0, posts: 0, rapports: 0, fichiers: 0 });
   });
 });

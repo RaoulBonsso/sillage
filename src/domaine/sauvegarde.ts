@@ -37,7 +37,14 @@ export function construireSauvegarde(donnees: DonneesEspace, exporteLe: string):
   return { format: FORMAT_SAUVEGARDE, version: VERSION_SAUVEGARDE, exporteLe, donnees: propres };
 }
 
-export type LectureSauvegarde = { ok: true; sauvegarde: Sauvegarde } | { ok: false; erreur: string };
+export type Volumes = Record<(typeof COLLECTIONS_SAUVEGARDEES)[number], number>;
+
+/** Nombre de documents par collection : l'aperçu montré avant de restaurer. */
+export function apercuSauvegarde(s: Sauvegarde): Volumes {
+  return Object.fromEntries(COLLECTIONS_SAUVEGARDEES.map((c) => [c, s.donnees[c].length])) as Volumes;
+}
+
+export type LectureSauvegarde ={ ok: true; sauvegarde: Sauvegarde } | { ok: false; erreur: string };
 
 const objet = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
 

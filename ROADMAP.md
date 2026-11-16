@@ -29,6 +29,8 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
   - [x] Règles pures `src/domaine/sauvegarde.ts` : construire une sauvegarde versionnée, la relire et la valider (les réglages / clés MCP n'en font jamais partie)
   - [x] Export : route `/export/espace` (JSON téléchargeable) + lien dans Intégrations
   - [ ] Import : action serveur avec aperçu des volumes, écriture dans le dépôt, refus des fichiers invalides
+    - [x] Aperçu des volumes (`apercuSauvegarde`, pur) et restauration dans le dépôt (`src/store/restauration.ts`, réglages intacts)
+    - [ ] Action serveur + formulaire d'import dans Intégrations (aperçu, confirmation, refus des fichiers invalides)
 
 ## v0.3 — intelligence
 - [ ] Détection des réponses : lecture IMAP des réponses aux candidatures → étape « réponse » automatique
