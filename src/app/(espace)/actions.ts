@@ -7,6 +7,7 @@ import { avancer } from "@/domaine/pipeline";
 import { ETAPES, type Etape } from "@/domaine/types";
 import { envoyer } from "@/lib/courriel";
 import { emettre } from "@/lib/jeton";
+import { apercuImport, importer, type ResultatImport } from "@/store/importation";
 import { revoquerCles, versionCles } from "@/store/reglages";
 import { COOKIE, exigerSession, secret } from "@/lib/serveur";
 
@@ -86,6 +87,28 @@ export async function creerCleMcp(): Promise<string> {
 export async function revoquerClesMcp(): Promise<void> {
   const s = await exigerSession();
   await revoquerCles(s.depot);
+}
+
+async function texteDuFichier(form: FormData): Promise<string | null> {
+  const f = form.get("fichier");
+  return f instanceof File && f.size > 0 ? f.text() : null;
+}
+
+/** Import, étape 1 : valide le fichier et renvoie les volumes, sans rien écrire. */
+export async function apercuImportEspace(form: FormData): Promise<ResultatImport> {
+  await exigerSession();
+  const texte = await texteDuFichier(form);
+  return texte === null ? { ok: false, erreur: "Choisissez un fichier de sauvegarde." } : apercuImport(texte);
+}
+
+/** Import, étape 2 (après confirmation) : relit le fichier et l'écrit dans l'espace. */
+export async function importerEspace(form: FormData): Promise<ResultatImport> {
+  const s = await exigerSession();
+  const texte = await texteDuFichier(form);
+  if (texte === null) return { ok: false, erreur: "Choisissez un fichier de sauvegarde." };
+  const r = await importer(s.depot, texte);
+  if (r.ok) revalidatePath("/", "layout");
+  return r;
 }
 
 export async function deconnexion() {

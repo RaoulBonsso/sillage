@@ -2,6 +2,7 @@ import { Apparition } from "@/components/apparition";
 import { origine, exigerSession } from "@/lib/serveur";
 import { listeOutils } from "@/mcp/protocole";
 import { Cle } from "./cle";
+import { Import } from "./import";
 
 export const metadata = { title: "Intégrations" };
 
@@ -36,6 +37,8 @@ export default async function Integrations() {
         <a href="/export/espace" className="inline-flex items-center gap-2 rounded-full border border-ligne-forte px-4 py-2 text-sm hover:border-ecume hover:text-ecume">
           Télécharger la sauvegarde (JSON)
         </a>
+        <h3 className="mb-2 mt-6 text-sm font-medium">Restaurer une sauvegarde</h3>
+        <Import />
       </Apparition>
       <div className="grid gap-4 lg:grid-cols-3">
         {blocs.map((b, i) => (
