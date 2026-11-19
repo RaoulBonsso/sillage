@@ -34,6 +34,9 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
 
 ## v0.3 — intelligence
 - [ ] Détection des réponses : lecture IMAP des réponses aux candidatures → étape « réponse » automatique
+  - [x] Règle pure `src/domaine/reponses.ts` : rapprocher un message reçu d'une candidature (fil `In-Reply-To` / `References`, sinon expéditeur = contact) et l'enregistrer en étape « réponse »
+  - [ ] Lecteur IMAP (`src/lib`) + route protégée qui applique la règle sur les nouveaux messages
+  - [ ] Bouton « Chercher les réponses » dans Intégrations
 - [ ] Score de cible explicable (pondérations visibles)
 - [ ] Modèles d'e-mails de relance par étape, éditables
 - [ ] Statistiques : taux de réponse par secteur, ville, canal, jour d'envoi
