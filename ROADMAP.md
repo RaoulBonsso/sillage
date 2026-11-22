@@ -35,10 +35,10 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
 ## v0.3 — intelligence
 - [ ] Détection des réponses : lecture IMAP des réponses aux candidatures → étape « réponse » automatique
   - [x] Règle pure `src/domaine/reponses.ts` : rapprocher un message reçu d'une candidature (fil `In-Reply-To` / `References`, sinon expéditeur = contact) et l'enregistrer en étape « réponse »
-  - [ ] Lecteur IMAP + route protégée qui applique la règle sur les nouveaux messages
+  - [x] Lecteur IMAP + route protégée qui applique la règle sur les nouveaux messages
     - [x] Analyse pure des en-têtes bruts d'un message (`src/lib/entetes.ts`) → `MessageRecu`
     - [x] Lecteur IMAP (`src/lib/imap.ts`, variables `GMAIL_USER` / `GMAIL_APP_PASSWORD`) : récupère les nouveaux messages de la boîte de réception
-    - [ ] Service `chercherReponses` (store) + route protégée `/api/reponses` qui applique la règle
+    - [x] Service `chercherReponses` (`src/store/reponses.ts`) + route `POST /api/reponses` (session requise, fenêtre de 30 jours) qui applique la règle
   - [ ] Bouton « Chercher les réponses » dans Intégrations
 - [ ] Score de cible explicable (pondérations visibles)
 - [ ] Modèles d'e-mails de relance par étape, éditables
