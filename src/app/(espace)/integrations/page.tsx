@@ -3,6 +3,7 @@ import { origine, exigerSession } from "@/lib/serveur";
 import { listeOutils } from "@/mcp/protocole";
 import { Cle } from "./cle";
 import { Import } from "./import";
+import { Reponses } from "./reponses";
 
 export const metadata = { title: "Intégrations" };
 
@@ -39,6 +40,13 @@ export default async function Integrations() {
         </a>
         <h3 className="mb-2 mt-6 text-sm font-medium">Restaurer une sauvegarde</h3>
         <Import />
+      </Apparition>
+      <Apparition delai={0.07} className="carte p-6">
+        <h2 className="font-medium">Réponses aux candidatures</h2>
+        <p className="mb-4 mt-1 text-sm text-discret">
+          Lit votre boîte de réception (30 derniers jours, lecture seule) et passe en « réponse » les candidatures qui ont reçu un message.
+        </p>
+        <Reponses />
       </Apparition>
       <div className="grid gap-4 lg:grid-cols-3">
         {blocs.map((b, i) => (
