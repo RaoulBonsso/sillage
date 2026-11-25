@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, FileText, Mail, UserRound } from "lucide-react";
+import { DetailScore } from "@/components/detail-score";
 import { Markdown } from "@/components/markdown";
 import { LIBELLES, transitionsPossibles } from "@/domaine/pipeline";
+import { expliquerScore } from "@/domaine/score";
 import { aujourdhui, exigerSession } from "@/lib/serveur";
 import { changerEtape, noter } from "../../actions";
 import { Envoi } from "./envoi";
@@ -41,6 +43,7 @@ export default async function Fiche({ params }: { params: Promise<{ id: string }
           <div className="text-right">
             <p className="font-mono text-4xl tabular-nums text-ecume">{e.score}</p>
             <p className="text-xs text-discret">pertinence</p>
+            <div className="mt-2 text-left"><DetailScore score={expliquerScore(e)} /></div>
           </div>
         )}
       </header>

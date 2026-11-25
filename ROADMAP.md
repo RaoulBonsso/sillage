@@ -40,9 +40,9 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
     - [x] Lecteur IMAP (`src/lib/imap.ts`, variables `GMAIL_USER` / `GMAIL_APP_PASSWORD`) : récupère les nouveaux messages de la boîte de réception
     - [x] Service `chercherReponses` (`src/store/reponses.ts`) + route `POST /api/reponses` (session requise, fenêtre de 30 jours) qui applique la règle
   - [x] Bouton « Chercher les réponses » dans Intégrations
-- [ ] Score de cible explicable (pondérations visibles)
+- [x] Score de cible explicable (pondérations visibles)
   - [x] Règle pure `src/domaine/score.ts` : `expliquerScore` décompose le score en critères pondérés (total 100), chacun justifié
-  - [ ] Afficher le détail du score sur la fiche candidature et dans la liste des cibles
+  - [x] Afficher le détail du score sur la fiche candidature et dans la liste des cibles (`src/components/detail-score.tsx`)
 - [ ] Modèles d'e-mails de relance par étape, éditables
 - [ ] Statistiques : taux de réponse par secteur, ville, canal, jour d'envoi
 

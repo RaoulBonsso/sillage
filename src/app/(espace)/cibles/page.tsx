@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Download, ExternalLink, Landmark, Play } from "lucide-react";
 import { Apparition } from "@/components/apparition";
+import { DetailScore } from "@/components/detail-score";
 import { LIBELLES } from "@/domaine/pipeline";
+import { expliquerScore } from "@/domaine/score";
 import { exigerSession } from "@/lib/serveur";
 import { demarrerCandidature } from "../actions";
 
@@ -63,6 +65,7 @@ export default async function Cibles({ searchParams }: { searchParams: Promise<{
                   </div>
                 </div>
                 <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-discret">{e.signal.texte}</p>
+                <div className="mt-3"><DetailScore score={expliquerScore(e)} /></div>
                 <div className="mt-auto flex flex-wrap items-center gap-3 pt-4 text-xs">
                   {et ? (
                     <Link href={`/pipeline/${e.id}`} className="puce !border-ecume/40 !text-ecume hover:bg-ecume-doux">{LIBELLES[et]} →</Link>
