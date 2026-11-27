@@ -45,7 +45,7 @@ Une tâche = un commit utile. La routine quotidienne prend la première case non
   - [x] Afficher le détail du score sur la fiche candidature et dans la liste des cibles (`src/components/detail-score.tsx`)
 - [ ] Modèles d'e-mails de relance par étape, éditables
   - [x] Règles pures `src/domaine/modeles.ts` : modèles par défaut par rang de relance, variables remplies, modèle invalide refusé
-  - [ ] Modèles enregistrés par espace (réglages, sauvegarde comprise) + édition dans Intégrations
+  - [x] Modèles enregistrés par espace (réglages, sauvegarde comprise) + édition dans Intégrations
   - [ ] La fiche candidature préremplit la relance avec le modèle de l'étape
 - [ ] Statistiques : taux de réponse par secteur, ville, canal, jour d'envoi
 

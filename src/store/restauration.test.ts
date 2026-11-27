@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { construireSauvegarde, lireSauvegarde } from "@/domaine/sauvegarde";
 import { depotMemoire } from "./memoire";
 import { restaurer } from "./restauration";
+import { enregistrerModeles, modelesEnregistres } from "./modeles";
 import { revoquerCles, versionCles } from "./reglages";
 
 const donnees = {
@@ -45,6 +46,22 @@ describe("restaurer une sauvegarde dans un espace", () => {
   });
 
   it("renvoie le nombre de documents écrits", async () => {
-    expect(await restaurer(depotMemoire(), sauvegarde())).toEqual({ entreprises: 1, candidatures: 1, posts: 1, rapports: 1, fichiers: 1 });
+    expect(await restaurer(depotMemoire(), sauvegarde())).toEqual({ entreprises: 1, candidatures: 1, posts: 1, rapports: 1, fichiers: 1, modeles: 0 });
+  });
+
+  it("restaure les modèles de relance de la sauvegarde", async () => {
+    const d = depotMemoire();
+    const modeles = [{ objet: "A", corps: "a" }, { objet: "B", corps: "b" }];
+    const s = sauvegarde();
+    await restaurer(d, { ...s, donnees: { ...s.donnees, modeles } });
+    expect(await modelesEnregistres(d)).toEqual(modeles);
+  });
+
+  it("garde les modèles de l'espace si la sauvegarde n'en contient pas", async () => {
+    const d = depotMemoire();
+    const modeles = [{ objet: "C", corps: "c" }, { objet: "D", corps: "d" }];
+    await enregistrerModeles(d, modeles);
+    await restaurer(d, sauvegarde());
+    expect(await modelesEnregistres(d)).toEqual(modeles);
   });
 });

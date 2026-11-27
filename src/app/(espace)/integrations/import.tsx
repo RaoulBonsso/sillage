@@ -11,6 +11,7 @@ const LIBELLES: Record<keyof Volumes, string> = {
   posts: "posts",
   rapports: "rapports",
   fichiers: "fichiers",
+  modeles: "modèles de relance",
 };
 
 type Etat = { etape: "choix" } | { etape: "apercu"; volumes: Volumes } | { etape: "fait"; volumes: Volumes };
@@ -69,7 +70,7 @@ export function Import() {
       {etat.etape === "apercu" && (
         <div className="space-y-2">
           <p role="status" className="text-sm">
-            Ce fichier contient : {liste(etat.volumes)}. Les documents de même identifiant seront écrasés, les autres conservés ; les clés MCP ne changent pas.
+            Ce fichier contient : {liste(etat.volumes)}. Les documents de même identifiant seront écrasés, les autres conservés ; les modèles de relance ne sont remplacés que si le fichier en contient ; les clés MCP ne changent pas.
           </p>
           <button type="button" disabled={enCours} onClick={confirmer} className="inline-flex items-center gap-2 rounded-full bg-ecume px-5 py-2.5 font-medium text-[#00110d]">
             Confirmer l&apos;import

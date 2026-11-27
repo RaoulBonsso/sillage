@@ -4,6 +4,7 @@ import { emettre, espaceDe } from "@/lib/jeton";
 import { depot } from "@/lib/serveur";
 import { lireSauvegarde } from "@/domaine/sauvegarde";
 import { revoquerCles } from "@/store/reglages";
+import { enregistrerModeles } from "@/store/modeles";
 
 const jeton = vi.hoisted(() => ({ valeur: undefined as string | undefined }));
 vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => (jeton.valeur ? { value: jeton.valeur } : undefined) }) }));
@@ -37,6 +38,8 @@ describe("GET /export/espace", () => {
     const d = depot(esp);
     await d.fichiers.ecrire({ id: "cv", nom: "cv.pdf", type: "application/pdf", donnees: "JVBERg==" });
     await revoquerCles(d);
+    const modeles = [{ objet: "A", corps: "a" }, { objet: "B", corps: "b" }];
+    await enregistrerModeles(d, modeles);
     const r = await appeler();
     expect(r.status).toBe(200);
     expect(r.headers.get("content-type")).toContain("application/json");
@@ -46,6 +49,8 @@ describe("GET /export/espace", () => {
     expect(texte).not.toContain("reglages");
     const lu = lireSauvegarde(texte);
     expect(lu.ok).toBe(true);
-    if (lu.ok) expect(lu.sauvegarde.donnees.fichiers.map((f) => f.id)).toEqual(["cv"]);
+    if (!lu.ok) throw new Error("lecture attendue");
+    expect(lu.sauvegarde.donnees.fichiers.map((f) => f.id)).toEqual(["cv"]);
+    expect(lu.sauvegarde.donnees.modeles).toEqual(modeles);
   });
 });

@@ -54,13 +54,36 @@ describe("apercuSauvegarde", () => {
   it("compte les documents de chaque collection", () => {
     const lue = lireSauvegarde(enveloppe(donnees));
     if (!lue.ok) throw new Error("lecture attendue");
-    expect(apercuSauvegarde(lue.sauvegarde)).toEqual({ entreprises: 1, candidatures: 1, posts: 1, rapports: 1, fichiers: 1 });
+    expect(apercuSauvegarde(lue.sauvegarde)).toEqual({ entreprises: 1, candidatures: 1, posts: 1, rapports: 1, fichiers: 1, modeles: 0 });
   });
 
   it("compte zéro pour une sauvegarde vide", () => {
     const vide = { entreprises: [], candidatures: [], posts: [], rapports: [], fichiers: [] };
     const lue = lireSauvegarde(enveloppe(vide));
     if (!lue.ok) throw new Error("lecture attendue");
-    expect(apercuSauvegarde(lue.sauvegarde)).toEqual({ entreprises: 0, candidatures: 0, posts: 0, rapports: 0, fichiers: 0 });
+    expect(apercuSauvegarde(lue.sauvegarde)).toEqual({ entreprises: 0, candidatures: 0, posts: 0, rapports: 0, fichiers: 0, modeles: 0 });
+  });
+});
+
+describe("modèles de relance dans la sauvegarde", () => {
+  const modeles = [{ objet: "A", corps: "a" }, { objet: "B", corps: "b" }];
+
+  it("les conserve à l'aller-retour et les compte dans l'aperçu", () => {
+    const s = construireSauvegarde({ ...donnees, modeles } as never, "2026-11-14T10:00:00.000Z");
+    const lue = lireSauvegarde(JSON.stringify(s));
+    if (!lue.ok) throw new Error("lecture attendue");
+    expect(lue.sauvegarde.donnees.modeles).toEqual(modeles);
+    expect(apercuSauvegarde(lue.sauvegarde).modeles).toBe(2);
+  });
+
+  it("reste lisible sans modèles (sauvegarde antérieure)", () => {
+    const lue = lireSauvegarde(enveloppe(donnees));
+    if (!lue.ok) throw new Error("lecture attendue");
+    expect(lue.sauvegarde.donnees).not.toHaveProperty("modeles");
+  });
+
+  it("refuse un fichier aux modèles invalides", () => {
+    const r = lireSauvegarde(enveloppe({ ...donnees, modeles: [modeles[0], { objet: "B", corps: "{{prenom}}" }] }));
+    expect(r).toEqual({ ok: false, erreur: "Relance 2 : Variable inconnue : {{prenom}}." });
   });
 });

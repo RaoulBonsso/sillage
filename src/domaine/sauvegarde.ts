@@ -1,9 +1,11 @@
+import { lireModeles, type ModeleEmail } from "./modeles";
 import type { Candidature, Entreprise, Post, Rapport } from "./types";
 
 /**
  * Sauvegarde complète d'un espace (réversibilité) : un JSON versionné.
- * Les réglages (version des clés MCP) n'en font jamais partie : restaurer une
- * sauvegarde ne doit pas ressusciter des clés révoquées.
+ * La version des clés MCP n'en fait jamais partie : restaurer une sauvegarde
+ * ne doit pas ressusciter des clés révoquées. Seul réglage embarqué : les
+ * modèles de relance, s'ils ont été personnalisés.
  */
 export const FORMAT_SAUVEGARDE = "sillage-espace";
 export const VERSION_SAUVEGARDE = 1;
@@ -21,6 +23,8 @@ export interface DonneesEspace {
   posts: Post[];
   rapports: (Rapport & { id: string })[];
   fichiers: FichierSauvegarde[];
+  /** Absent des sauvegardes antérieures et des espaces aux modèles par défaut. */
+  modeles?: ModeleEmail[];
 }
 
 export interface Sauvegarde {
@@ -34,14 +38,16 @@ const COLLECTIONS_SAUVEGARDEES = ["entreprises", "candidatures", "posts", "rappo
 
 export function construireSauvegarde(donnees: DonneesEspace, exporteLe: string): Sauvegarde {
   const propres = Object.fromEntries(COLLECTIONS_SAUVEGARDEES.map((c) => [c, donnees[c]])) as unknown as DonneesEspace;
+  if (donnees.modeles) propres.modeles = donnees.modeles;
   return { format: FORMAT_SAUVEGARDE, version: VERSION_SAUVEGARDE, exporteLe, donnees: propres };
 }
 
-export type Volumes = Record<(typeof COLLECTIONS_SAUVEGARDEES)[number], number>;
+export type Volumes = Record<(typeof COLLECTIONS_SAUVEGARDEES)[number] | "modeles", number>;
 
-/** Nombre de documents par collection : l'aperçu montré avant de restaurer. */
+/** Nombre de documents par collection (et de modèles) : l'aperçu montré avant de restaurer. */
 export function apercuSauvegarde(s: Sauvegarde): Volumes {
-  return Object.fromEntries(COLLECTIONS_SAUVEGARDEES.map((c) => [c, s.donnees[c].length])) as Volumes;
+  const collections = Object.fromEntries(COLLECTIONS_SAUVEGARDEES.map((c) => [c, s.donnees[c].length]));
+  return { ...collections, modeles: s.donnees.modeles?.length ?? 0 } as Volumes;
 }
 
 export type LectureSauvegarde ={ ok: true; sauvegarde: Sauvegarde } | { ok: false; erreur: string };
@@ -72,6 +78,11 @@ export function lireSauvegarde(texte: string): LectureSauvegarde {
       ids.add(d.id);
     }
     sortie[c] = docs;
+  }
+  if (brut.donnees.modeles !== undefined) {
+    const m = lireModeles(brut.donnees.modeles);
+    if (!m.ok) return m;
+    sortie.modeles = m.modeles;
   }
   return {
     ok: true,

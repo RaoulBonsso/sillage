@@ -1,3 +1,4 @@
+import type { ModeleEmail } from "@/domaine/modeles";
 import type { Candidature, Entreprise, Post, Rapport } from "@/domaine/types";
 
 /** Une collection de documents identifiés, propre à un espace de travail. */
@@ -18,11 +19,11 @@ export interface Fichier {
   donnees: string; // base64 — un CV PDF tient largement sous la limite de 1 Mo d'un document
 }
 
-/** Réglages d'un espace (document unique `cles`) : version courante des clés MCP. */
-export interface Reglages {
-  id: "cles";
-  version: number;
-}
+/**
+ * Réglages d'un espace, un document par sujet : `cles` (version courante des
+ * clés MCP) et `modeles` (modèles de relance personnalisés).
+ */
+export type Reglages = { id: "cles"; version: number } | { id: "modeles"; modeles: ModeleEmail[] };
 
 export interface Depot {
   entreprises: Collection<Entreprise>;

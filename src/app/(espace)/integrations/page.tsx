@@ -1,14 +1,17 @@
 import { Apparition } from "@/components/apparition";
 import { origine, exigerSession } from "@/lib/serveur";
 import { listeOutils } from "@/mcp/protocole";
+import { modelesDeLEspace } from "@/store/modeles";
 import { Cle } from "./cle";
 import { Import } from "./import";
+import { Modeles } from "./modeles";
 import { Reponses } from "./reponses";
 
 export const metadata = { title: "Intégrations" };
 
 export default async function Integrations() {
-  await exigerSession();
+  const s = await exigerSession();
+  const modeles = await modelesDeLEspace(s.depot);
   const url = `${await origine()}/api/mcp`;
   const outils = listeOutils();
   const blocs = [
@@ -33,7 +36,7 @@ export default async function Integrations() {
       <Apparition delai={0.06} className="carte p-6">
         <h2 className="font-medium">Sauvegarde de l&apos;espace</h2>
         <p className="mb-4 mt-1 text-sm text-discret">
-          Un fichier JSON avec vos entreprises, candidatures, posts, rapports et fichiers. Les clés MCP n&apos;y figurent jamais.
+          Un fichier JSON avec vos entreprises, candidatures, posts, rapports, fichiers et modèles de relance. Les clés MCP n&apos;y figurent jamais.
         </p>
         <a href="/export/espace" className="inline-flex items-center gap-2 rounded-full border border-ligne-forte px-4 py-2 text-sm hover:border-ecume hover:text-ecume">
           Télécharger la sauvegarde (JSON)
@@ -47,6 +50,11 @@ export default async function Integrations() {
           Lit votre boîte de réception (30 derniers jours, lecture seule) et passe en « réponse » les candidatures qui ont reçu un message.
         </p>
         <Reponses />
+      </Apparition>
+      <Apparition delai={0.075} className="carte p-6">
+        <h2 className="font-medium">Modèles de relance</h2>
+        <p className="mb-4 mt-1 text-sm text-discret">L&apos;objet et le message de vos e-mails de relance, à votre façon.</p>
+        <Modeles modeles={modeles} />
       </Apparition>
       <div className="grid gap-4 lg:grid-cols-3">
         {blocs.map((b, i) => (

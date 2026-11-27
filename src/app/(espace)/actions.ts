@@ -3,11 +3,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { MODELES_PAR_DEFAUT, type LectureModeles } from "@/domaine/modeles";
 import { avancer } from "@/domaine/pipeline";
 import { ETAPES, type Etape } from "@/domaine/types";
 import { envoyer } from "@/lib/courriel";
 import { emettre } from "@/lib/jeton";
 import { apercuImport, importer, type ResultatImport } from "@/store/importation";
+import { enregistrerModeles } from "@/store/modeles";
 import { revoquerCles, versionCles } from "@/store/reglages";
 import { COOKIE, exigerSession, secret } from "@/lib/serveur";
 
@@ -87,6 +89,15 @@ export async function creerCleMcp(): Promise<string> {
 export async function revoquerClesMcp(): Promise<void> {
   const s = await exigerSession();
   await revoquerCles(s.depot);
+}
+
+/** Enregistre les modèles de relance de l'espace (champs `objet-N` et `corps-N`, un couple par rang). */
+export async function enregistrerModelesRelance(form: FormData): Promise<LectureModeles> {
+  const s = await exigerSession();
+  const saisie = MODELES_PAR_DEFAUT.map((_, i) => ({ objet: form.get(`objet-${i}`), corps: form.get(`corps-${i}`) }));
+  const r = await enregistrerModeles(s.depot, saisie);
+  if (r.ok) revalidatePath("/integrations");
+  return r;
 }
 
 async function texteDuFichier(form: FormData): Promise<string | null> {
